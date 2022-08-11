@@ -13,7 +13,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -40,12 +42,21 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         LOG.info("Accediendo al método onApplicationEvent(...)");
 
         if (!this.alreadySetup) {
+            // Creamos los permisos iniciales
+            Permission readStudentPermission = this.createPermissionIfNotFound("student:read");
+            Permission writeStudentPermission = this.createPermissionIfNotFound("student:write");
+            Permission readCoursePermission = this.createPermissionIfNotFound("course:read");
+            Permission writeCoursePermission = this.createPermissionIfNotFound("course:write");
 
-            //TODO: Creamos los permisos iniciales
+            //Creamos los roles iniciales
+            List<Permission> adminPermissions = Arrays.asList(readStudentPermission, writeStudentPermission, readCoursePermission, writeCoursePermission);
+            List<Permission> userPermissions = Arrays.asList(readStudentPermission, readCoursePermission);
 
-            //TODO: Creamos los roles iniciales
+            Role adminRole = this.createRoleIfNotFound("ROLE_ADMIN", adminPermissions);
+            Role userRole = this.createRoleIfNotFound("ROLE_USER", userPermissions);
 
-            //TODO: Creamos un usuario inicial
+            //Creamos un usuario inicial
+            this.createUserIfNotFound("Test", "Test", "test@test.com", "{noop}test", Arrays.asList(adminRole));
 
             this.alreadySetup = true;
         }
@@ -90,3 +101,32 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
 }
+/**
+ * 3. Configurar permisos (privilegios) y roles
+ * A continuación, centrémonos en hacer una configuración temprana de los privilegios y roles en el sistema.
+ * Vincularemos esto al inicio de la aplicación y usaremos un ApplicationListener en ContextRefreshedEvent
+ * para cargar nuestros datos iniciales en el inicio del servidor.
+ * <p>
+ * Entonces, ¿qué está sucediendo durante este simple código de configuración? Nada complicado:
+ * <p>
+ * - Estamos creando los permisos (privilegios).
+ * - Luego estamos creando los roles y asignándoles los permisos.
+ * - Finalmente, estamos creando un usuario y asignándole un rol.
+ * <p>
+ * Observe cómo estamos usando una bandera (indicador) alreadySetup para determinar si la instalación (generación de
+ * permisos, roles y usuario) debe ejecutarse o no.
+ * <p>
+ * Esto se debe simplemente a que ContextRefreshedEvent se puede activar varias veces dependiendo de cuántos contextos
+ * hayamos configurado en nuestra aplicación. Y solo queremos ejecutar la configuración una vez.
+ * <p>
+ * Dos notas rápidas aquí.
+ * - Primero veremos la terminología.
+ * Estamos usando los términos Permiso (Privilegio) – Rol aquí. Pero en Spring, estos son ligeramente diferentes.
+ * En Spring, nuestro permiso (privilegio) se conoce como Rol y también como una autoridad (authority) (otorgada),
+ * lo cual es un poco confuso.
+ * Esto no es un problema para la implementación, por supuesto, pero definitivamente vale la pena señalarlo.
+ * <p>
+ * - En segundo lugar, estos roles de Spring (nuestros permisos (privilegios)) necesitan un prefijo.
+ * De forma predeterminada, ese prefijo es "ROLE", pero se puede cambiar. No estamos usando ese prefijo aquí,
+ * solo para mantener las cosas simples, pero tenga en cuenta que será necesario si no lo estamos cambiando explícitamente.
+ */
