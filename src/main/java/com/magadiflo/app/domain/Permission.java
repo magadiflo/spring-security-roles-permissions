@@ -2,6 +2,7 @@ package com.magadiflo.app.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 
 @Entity
 @Table(name = "permissions")
@@ -14,6 +15,9 @@ public class Permission implements Serializable {
     private Long id;
 
     private String name;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Collection<Role> roles;
 
     public Permission() {
     }
@@ -32,6 +36,14 @@ public class Permission implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

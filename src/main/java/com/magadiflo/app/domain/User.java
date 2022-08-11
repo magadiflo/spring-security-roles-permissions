@@ -2,6 +2,7 @@ package com.magadiflo.app.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +19,13 @@ public class User implements Serializable {
     private String password;
     private boolean enabled;
     private boolean tokenExpired;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
     public User() {
     }
@@ -76,6 +84,14 @@ public class User implements Serializable {
 
     public void setTokenExpired(boolean tokenExpired) {
         this.tokenExpired = tokenExpired;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
