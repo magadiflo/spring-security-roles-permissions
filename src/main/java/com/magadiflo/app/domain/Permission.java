@@ -22,6 +22,10 @@ public class Permission implements Serializable {
     public Permission() {
     }
 
+    public Permission(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
