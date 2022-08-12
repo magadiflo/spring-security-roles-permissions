@@ -13,3 +13,19 @@ Tenemos 3 entidades principales:
 * El rol representa los roles de alto nivel del usuario en el sistema. Cada rol tendrá un conjunto de permisos (privilegios) de bajo nivel.
 * El permiso representa un permiso/privilegio/autoridad granular de bajo nivel en el sistema.
 
+## Ejecutar código justo después del inicio de la aplicación
+En este proyecto se usa el detector de eventos o ApplicationListener, junto al ContextRefreshedEvent.
+
+El ContextRefreshEvent se genera cuando se inicializa o actualiza un contexto de aplicación, 
+lo que significa que el método onApplicationEvent(...) se puede ejecutar más de una vez. Por lo tanto, 
+es posible que deba poner un tipo de estado en su componente para asegurarse de que el código 
+de inicialización se ejecute solo una vez. 
+
+En nuestro caso usamos una bandera "alreadySetup" para controlar que solo se ejecute una vez
+el código dentro del onApplicationEvent(...).
+
+Esta carga de datos iniciales lo implementamos en package setup, clase SetupDataLoader
+
+Existe otras formas, como la de usar el **CommandLineRunner**, pero en este proyecto usamos el ApplicationListener.
+
+[Para más información ir click a este enlace](https://www.codejava.net/frameworks/spring-boot/run-code-on-application-startup)

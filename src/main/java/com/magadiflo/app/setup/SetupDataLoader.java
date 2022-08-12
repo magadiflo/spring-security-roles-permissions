@@ -13,10 +13,17 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * El ContextRefreshEvent se genera cuando se inicializa o actualiza un contexto de aplicación,
+ * lo que significa que el método onApplicationEvent(...) se puede ejecutar más de una vez. Por lo tanto,
+ * es posible que deba poner un tipo de estado en su componente para asegurarse de que el código
+ * de inicialización se ejecute solo una vez. En nuestro caso usamos una bandera "alreadySetup"
+ */
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -40,6 +47,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         LOG.info("Accediendo al método onApplicationEvent(...)");
+        LOG.info("Número de beans inicializados en el contenedor: {}", event.getApplicationContext().getBeanDefinitionCount());
 
         if (!this.alreadySetup) {
             // Creamos los permisos iniciales
@@ -49,14 +57,14 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             Permission writeCoursePermission = this.createPermissionIfNotFound("course:write");
 
             //Creamos los roles iniciales
-            List<Permission> adminPermissions = Arrays.asList(readStudentPermission, writeStudentPermission, readCoursePermission, writeCoursePermission);
-            List<Permission> userPermissions = Arrays.asList(readStudentPermission, readCoursePermission);
+            List<Permission> adminPermissions = new ArrayList<>(Arrays.asList(readStudentPermission, writeStudentPermission, readCoursePermission, writeCoursePermission));
+            List<Permission> userPermissions = new ArrayList<>(Arrays.asList(readStudentPermission, readCoursePermission));
 
             Role adminRole = this.createRoleIfNotFound("ROLE_ADMIN", adminPermissions);
             Role userRole = this.createRoleIfNotFound("ROLE_USER", userPermissions);
 
             //Creamos un usuario inicial
-            this.createUserIfNotFound("Test", "Test", "test@test.com", "{noop}test", Arrays.asList(adminRole));
+            this.createUserIfNotFound("Test", "Test", "test@test.com", "{noop}test", new ArrayList<>(Arrays.asList(adminRole)));
 
             this.alreadySetup = true;
         }
