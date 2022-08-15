@@ -29,3 +29,6 @@ Esta carga de datos iniciales lo implementamos en package setup, clase SetupData
 Existe otras formas, como la de usar el **CommandLineRunner**, pero en este proyecto usamos el ApplicationListener.
 
 [Para más información ir click a este enlace](https://www.codejava.net/frameworks/spring-boot/run-code-on-application-startup)
+
+## Se usó flatMap para generar un apalanado de stream
+Revisar el siguiente link para mayor información sobre el [flatMap](https://www.delftstack.com/es/howto/java/flatmap-in-java/#:~:text=La%20funci%C3%B3n%20flatMap%20en%20Java,-La%20firma%20de&text=flatMap%20es%20una%20operaci%C3%B3n%20intermedia,map()%20y%20flat()%20.)
