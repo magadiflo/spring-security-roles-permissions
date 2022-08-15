@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,19 +29,18 @@ import java.util.List;
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SetupDataLoader.class);
-
     private boolean alreadySetup = false;
-
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
     private final IPermissionRepository permissionRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // TODO: Inyectar el PasswordEncoder
-
-    public SetupDataLoader(IUserRepository userRepository, IRoleRepository roleRepository, IPermissionRepository permissionRepository) {
+    public SetupDataLoader(IUserRepository userRepository, IRoleRepository roleRepository,
+                           IPermissionRepository permissionRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             Role userRole = this.createRoleIfNotFound("ROLE_USER", userPermissions);
 
             //Creamos un usuario inicial
-            this.createUserIfNotFound("Test", "Test", "test@test.com", "{noop}test", new ArrayList<>(Arrays.asList(adminRole)));
+            this.createUserIfNotFound("Test", "Test", "test@test.com", "test", new ArrayList<>(Arrays.asList(adminRole)));
 
             this.alreadySetup = true;
         }
@@ -100,7 +100,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setEmail(email);
-            user.setPassword(password); //TODO: Usar aquí el PasswordEncoder para encriptar password
+            user.setPassword(this.passwordEncoder.encode(password));
             user.setEnabled(true);
         }
         user.setRoles(roles);
