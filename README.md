@@ -32,3 +32,32 @@ Existe otras formas, como la de usar el **CommandLineRunner**, pero en este proy
 
 ## Se usó flatMap para generar un apalanado de stream
 Revisar el siguiente link para mayor información sobre el [flatMap](https://www.delftstack.com/es/howto/java/flatmap-in-java/#:~:text=La%20funci%C3%B3n%20flatMap%20en%20Java,-La%20firma%20de&text=flatMap%20es%20una%20operaci%C3%B3n%20intermedia,map()%20y%20flat()%20.)
+
+# Cómo probar el proyecto
+- Tenemos los siguientes **usuarios** sus **roles** y **permisos**  
+![img_1.png](img.png)
+
+- Como estamos usando la autenticación via Formulario, mediante el navegador
+  accedemos a la URL. Ingresamos algún usuario con el que queramos hacer pruebas 
+  y nos logueamos (La pass para todos es **test**). Al hacerlo mostrará una 
+  pantalla de error, y eso es porque no tenemos una página principal. 
+  Solo usaremos el login para obtener el **JSESSIONID**, nos vamos a inspeccionar/Applicación/Cookies
+    ```
+    http://localhost:8080/login
+    ```
+- Si ya estamos logueados y queremos y queremos iniciar sesión nuevamente, debemos desloguearnos solo
+  accediendo al a url /logout
+    ```
+    http://localhost:8080/logout
+    ```
+- Ya con el **JSESSIONID** correspondiente al usuario seleccionado, nos dirigimos a **POSTMAN**, realizamos
+  cualquier petición, en el apartado de resultados nos mostrará un formulario para iniciar sesión (formato html),
+  y en los Headers aparecerá una key **Cookie** que no puede ser descheckada, pero en la parte izquierda nos 
+  vamos a **go to cookies**, se abrirá una ventana con las cookies, clickamos en **JSESSIONID**
+  y cambiamos ese ID por el nuestro.
+- Finalmente, así debería quedar
+    ```
+    Key: Cookie
+    Value: JSESSIONID=D0DEA0C561D2592874E70A36DD21A5DF
+    ```
+- Realizamos la petición y observamos los resultados, estos dependerán del usuario sus roles y permisos
