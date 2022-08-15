@@ -61,10 +61,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             List<Permission> userPermissions = new ArrayList<>(Arrays.asList(readStudentPermission, readCoursePermission));
 
             Role adminRole = this.createRoleIfNotFound("ROLE_ADMIN", adminPermissions);
-            Role userRole = this.createRoleIfNotFound("ROLE_USER", userPermissions);
+            Role studentRole = this.createRoleIfNotFound("ROLE_STUDENT", userPermissions);
 
-            //Creamos un usuario inicial
-            this.createUserIfNotFound("Test", "Test", "test@test.com", "test", new ArrayList<>(Arrays.asList(adminRole)));
+            //Creamos un usuarios iniciales
+            this.createUserIfNotFound("Admin Test", "Admin Test", "admin.test@test.com", "test", new ArrayList<>(Arrays.asList(adminRole)));
+            this.createUserIfNotFound("Student test", "Student Test", "student.test@test.com", "test", new ArrayList<>(Arrays.asList(studentRole)));
 
             this.alreadySetup = true;
         }
