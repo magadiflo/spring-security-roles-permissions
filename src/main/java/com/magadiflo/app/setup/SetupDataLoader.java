@@ -58,14 +58,18 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
             //Creamos los roles iniciales
             List<Permission> adminPermissions = new ArrayList<>(Arrays.asList(readStudentPermission, writeStudentPermission, readCoursePermission, writeCoursePermission));
-            List<Permission> userPermissions = new ArrayList<>(Arrays.asList(readStudentPermission, readCoursePermission));
+            List<Permission> adminTraineePermissions = new ArrayList<>(Arrays.asList(readStudentPermission, readCoursePermission));
+            List<Permission> studentPermissions = new ArrayList<>(Arrays.asList(readStudentPermission));
 
             Role adminRole = this.createRoleIfNotFound("ROLE_ADMIN", adminPermissions);
-            Role studentRole = this.createRoleIfNotFound("ROLE_STUDENT", userPermissions);
+            Role adminTraineeRole = this.createRoleIfNotFound("ROLE_ADMINTRAINEE", adminTraineePermissions);
+            Role studentRole = this.createRoleIfNotFound("ROLE_STUDENT", studentPermissions);
 
             //Creamos un usuarios iniciales
             this.createUserIfNotFound("Admin Test", "Admin Test", "admin.test@test.com", "test", new ArrayList<>(Arrays.asList(adminRole)));
+            this.createUserIfNotFound("Admin Trainee test", "Admin Trainee Test", "admin.trainee.test@test.com", "test", new ArrayList<>(Arrays.asList(adminTraineeRole)));
             this.createUserIfNotFound("Student test", "Student Test", "student.test@test.com", "test", new ArrayList<>(Arrays.asList(studentRole)));
+            this.createUserIfNotFound("Student and Admin Trainee test", "Student and Admin Trainee test", "student.admin.trainee.test@test.com", "test", new ArrayList<>(Arrays.asList(studentRole, adminTraineeRole)));
 
             this.alreadySetup = true;
         }

@@ -67,17 +67,18 @@ public class ApplicationUserService implements UserDetailsService {
      * El flatMap recibe las colecciones de los permisos y como salida los aplana en un único stream de permisos.
      * El método por referencia: Collection::stream es igual a lambda: permissions -> permissions.stream()
      * Nota: Podría suceder que varios roles tengan el mismo permission, produciéndose duplicado en el retorno
-     * de esta lista.
-     * Solución: Se puede usar el operador distinct(), o usar un Set<> por ejemplo, en el método getGrantedAuthorities(...)
-     * en vez de retornar un List<GrantedAuthority>, retornar un Set<GrantedAuthority>
+     * de esta lista. Entonces, como el map nos devuelve un string de cada nombre del permiso,
+     * aplicamos en ese caso el distinct(), pero ¡Ojo!, si usáramos el objeto Permission y no una cadena, entonces
+     * sería en ese caso necesario agregar en la clase Permission el método equals and hasCode, puesto que estos
+     * sirven precisamente para comparar los objetos, pero ese no es nuestro caso, ya que el map devuelve un string
+     * de los nombres de los permisos.
      */
-    //TODO: Hacer prueba de que un usuario puede tener varios roles y esos roles tener permisos que se repitan
     private List<String> getNameOfEachPermission(Collection<Role> roles) {
         return roles.stream()
                 .map(Role::getPermissions)
                 .flatMap(Collection::stream)
                 .map(Permission::getName)
-                //.distinct()
+                .distinct()
                 .collect(Collectors.toList());
     }
 
